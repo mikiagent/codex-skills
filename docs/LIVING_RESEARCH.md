@@ -37,296 +37,424 @@ A source can be excellent and still remain `SOURCE-OBSERVED` for our purposes un
 
 Source repository: `tech-leads-club/nj-mmo`
 
-Primary research documents added to this repository:
+Primary research documents:
 
 - `skills/on-failure-router/references/nj-mmo-self-improvement-patterns.md`
 - `skills/threejs-builder/references/nj-mmo-browser-mmo-patterns.md`
 
-## Research status
+## Overall status
 
-**Overall status: `SOURCE-OBSERVED` + `TRANSFER-CANDIDATE`.**
+`SOURCE-OBSERVED` + `TRANSFER-CANDIDATE`
 
-We inspected repository source, architecture decisions, agent Skills, validation artifacts, tests/documentation structure, lesson-management code, package configuration, and game/asset workflow documentation.
+We inspected repository source, architecture decisions, agent Skills, validation artifacts, lesson-management code, testing structure, game architecture, asset workflow, and project documentation.
 
-We have **not yet cloned and run NJ MMO locally**, so repository claims about complete playability, performance, feature completeness, WAN behavior, concurrency, and stability are not promoted to `LOCALLY-TESTED`.
+We have not yet cloned/run/load-tested NJ MMO locally. Playability, performance, WAN behavior, concurrency, and numeric lesson thresholds remain source claims/choices rather than local proof.
 
----
+## High-value observations
 
-## High-value source observations
+### Spec-driven Planner → Implementer → independent Verifier
 
-### Agentic development system
-
-NJ MMO uses a durable spec-driven development model built around:
-
-```text
-ROADMAP
-→ Planner
-→ spec/design/tasks artifacts
-→ Implementer
-→ independent Verifier
-→ validation evidence
-→ bounded fixes/re-verification
-→ roadmap/state update
-```
-
-The orchestrator is intentionally a driver rather than the agent that also plans, codes, and judges the result.
+The orchestrator acts primarily as a driver. Feature intent is preserved in durable spec/design/tasks/validation artifacts, and the verifier is independent from the author for material work.
 
 **Status:** `SOURCE-OBSERVED`
 
-### Independent verification
+### Tests as trust boundary + fault injection
 
-Validation records explicitly use an independent verifier (`author ≠ verifier`) and map acceptance criteria to concrete evidence.
-
-**Status:** `SOURCE-OBSERVED`
-
-### Tests as a trust boundary
-
-The project states that tests derive from acceptance criteria and the test runner decides “done.” Tests are split by cheapest valid proof layer: pure unit, multiplayer room integration, and seed/data.
-
-**Status:** `SOURCE-OBSERVED`
-
-### Discrimination / fault-injection sensor
-
-Verification intentionally introduces small behavior-level defects and checks that tests actually fail, preventing superficially relevant but non-discriminating tests from being accepted.
+Acceptance criteria map to concrete evidence, with multiple proof layers. Verification can deliberately mutate behavior to ensure tests discriminate good from bad behavior.
 
 **Status:** `SOURCE-OBSERVED`
 
 ### Candidate → confirmed → quarantined lesson memory
 
-NJ MMO stores machine-managed lessons separately from raw feature failures. New lessons remain candidates until they recur across independent features; stale uncorroborated candidates can be pruned; confirmed lessons can be penalized and quarantined when harmful.
+New lessons remain candidates until independent recurrence. Stale candidates can be removed; harmful confirmed guidance can be quarantined without erasing history.
 
 **Status:** `SOURCE-OBSERVED`
 
 ### Deterministic lesson bookkeeping
 
-The model supplies semantic judgment, while a deterministic script owns IDs, recurrence, promotion, pruning, quarantine counters, and rendered documentation.
+LLMs supply semantic judgment while code owns IDs, recurrence counts, state transitions, pruning, quarantine counters, and rendered docs.
 
 **Status:** `SOURCE-OBSERVED`
 
-### Deterministic simulation + no wall-clock sleeps
+### Deterministic simulation tests
 
-Room tests disable background simulation and explicitly step the world, while waiting for actual message delivery rather than sleeping for guessed durations. The project records meaningful test-runtime improvement from this change.
-
-**Status:** `SOURCE-OBSERVED`
-
-### Persistent architecture decisions
-
-`.specs/STATE.md` stores numbered architecture decisions with reason, trade-off, scope, date, status, and explicit supersession/amendment. This distinguishes current rules from historical choices rather than deleting architectural history.
+Server/room tests can disable background simulation, advance the world explicitly, await real message delivery, and inject deterministic RNG rather than using wall-clock sleeps.
 
 **Status:** `SOURCE-OBSERVED`
 
-### Two-layer visual quality gate
+### Architecture decisions preserve history
 
-The asset workflow separates deterministic structural validation from perceptual fidelity inspection. Capturing a screenshot is explicitly not equivalent to looking at it and judging whether it is actually the requested asset.
+Decisions include rationale, trade-offs, scope, date/status, and explicit supersession/amendment.
 
 **Status:** `SOURCE-OBSERVED`
 
-### Fidelity and licensing are orthogonal
+### Structural + perceptual visual gate
 
-A legally clean asset can still be the wrong asset. NJ MMO documents prior failures where a source-pack asset passed superficial checks despite representing the wrong thing.
+A valid artifact or captured screenshot is not equivalent to a correct-looking result. Fidelity and licensing are separate axes.
 
 **Status:** `SOURCE-OBSERVED`
 
 ### Brain → signal → body animation architecture
 
-Generic semantic animation logic is separated from authoritative replicated event/state and from asset-specific GLTF/AnimationMixer playback. This allowed an asset/rendering architecture change without discarding the semantic state machine.
-
-**Status:** `SOURCE-OBSERVED`
-
-### Authoritative browser MMO foundation
-
-The project uses Three.js client + Colyseus server + shared TypeScript game-core + SQLite/Drizzle persistence, with the server owning gameplay outcomes.
+Semantic animation decisions, authoritative replicated signals, and GLTF/AnimationMixer implementation are distinct layers.
 
 **Status:** `SOURCE-OBSERVED`
 
 ---
 
-## Transfer candidates for this Skill repository
-
-These are **not yet mandatory rules**.
+## Existing self-improvement transfer candidates
 
 ### C-001 — Separate failure incidents from trusted lessons
 
-Proposed evolution:
-
 ```text
-failure log
-        ↓
-candidate lesson
-        ↓ independent recurrence
-confirmed lesson
-        ↓ harmful recurrence
-quarantine
+failure incident
+→ candidate lesson
+→ independent corroboration
+→ confirmed
+→ quarantine if harmful
 ```
-
-Reason: prevents a single dramatic failure from rewriting global Skill behavior.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### C-002 — Deterministic lesson registry
 
-Add a script-backed lesson store adjacent to `.codex-skill-feedback/failures.jsonl` so promotion/pruning/quarantine mechanics are not delegated to prompt memory.
+Add script-backed lesson-state mechanics adjacent to raw failure memory.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### C-003 — Independent verifier for material Skill changes
 
-Test a fresh verifier for broad workflow/router/script changes instead of relying entirely on the authoring agent's self-review.
+Compare fresh verification against author self-review before making this mandatory.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### C-004 — Acceptance criterion → evidence map
 
-For significant failure repairs, record exactly which observable outcome proves each repaired requirement and where the evidence comes from.
+Material repairs should say exactly what observation proves each repaired requirement.
 
 **Status:** `TRANSFER-CANDIDATE`
 
-### C-005 — Targeted fault injection for validators/tests
+### C-005 — Targeted fault injection
 
-Intentionally corrupt a behavior and verify the test/validator rejects it, particularly for deterministic asset tools and routing rules.
-
-**Status:** `TRANSFER-CANDIDATE`
-
-### C-006 — Expiring uncorroborated lessons
-
-Avoid indefinite prompt growth from one-off observations. Test time-based vs usage-based expiry before choosing a policy.
+Intentionally corrupt behaviors to verify validators/tests fail for the right reason.
 
 **Status:** `TRANSFER-CANDIDATE`
 
-### C-007 — Quarantine harmful guidance instead of deleting history
+### C-006 — Expire uncorroborated lessons
 
-Retain evidence explaining why a once-trusted lesson became unsafe/stale.
-
-**Status:** `TRANSFER-CANDIDATE`
-
-### C-008 — Two-layer gates for visual Skills
-
-Combine deterministic structural QA with actual perceptual inspection for sprites, 3D assets, game UI, and video.
+Test time-based versus usage/scenario-based staleness before choosing policy.
 
 **Status:** `TRANSFER-CANDIDATE`
 
-### C-009 — Separate project decisions, lessons, failures, and handoff state
+### C-007 — Quarantine harmful guidance without deleting history
 
-Do not collapse all durable context into one generic memory document.
+Preserve why a once-trusted rule became stale/harmful.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### C-008 — Multi-layer visual gates
+
+At minimum combine deterministic structural QA with perceptual inspection. Advanced mechanisms may also need temporal/parameter/performance validation.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### C-009 — Separate decisions, research, experiments, failures, lessons, and handoff
+
+Do not use one generic memory file for incompatible knowledge types.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### C-010 — Spec-driven feature artifacts for ambitious autonomous projects
 
-For larger game/application builds, use durable per-feature `spec.md`, `design.md`, `tasks.md`, and `validation.md`, while keeping reusable methodology in Skills.
+Use durable per-feature spec/design/tasks/validation artifacts while Skills retain reusable methodology.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ---
 
-## Three.js / Destiny-like transfer candidates
+# 2026-08-14 — Comparative browser-game architecture study
 
-### G-001 — Use NJ MMO as shared-world architecture evidence, not FPS-netcode proof
+Sources inspected:
 
-NJ MMO gives us a strong reference for server authority, persistence, shared rules, rooms, game data, tests, assets, and agent workflow.
+- `mshumer/Claude-of-Duty`
+- `ill-inc/biomes-game`
+- `MavonEngine/Core`
+- `iErcann/NotBlox`
+- `swift502/Sketchbook`
+- `mohsenheydari/three-fps`
+- `majidmanzarpour/threejs-game-skills`
+- `CloudAI-X/threejs-skills`
+- `scottstts/Threejs-Awesome-Graphics-Agent-Skills`
 
-It does **not** establish that Destiny-like movement/shooting will feel good under network latency.
+New Skill research references:
+
+- `skills/threejs-builder/references/browser-game-architecture-research.md`
+- `skills/on-failure-router/references/claude-of-duty-agent-production-patterns.md`
+
+Project-level detailed synthesis lives in `mikiagent/vibe-coding` rather than being duplicated into this Skill repo.
+
+## Overall status
+
+`SOURCE-OBSERVED` + `TRANSFER-CANDIDATE`
+
+The repositories were inspected at code level. They have not been cloned, benchmarked, WAN-tested, or validated against our Skills yet. These findings are intake, not automatic production rules.
+
+---
+
+## New game/runtime candidates
+
+### G-001 — Shared-world architecture evidence is not FPS-netcode proof
+
+NJ MMO/Biomes provide authority, persistence, world, and scale references. Twitch prediction/reconciliation/hit-registration needs its own experiments.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### G-002 — Prototype FPS prediction/reconciliation separately
 
-Before committing to the multiplayer stack, test:
-
-- local prediction;
-- server reconciliation;
-- remote interpolation;
-- snapshot/update rates;
-- simulated latency/jitter/loss;
-- hitscan lag policy;
-- projectile authority;
-- bandwidth;
-- encounter CPU/GPU cost.
+Required lab should include client prediction, command sequences, server acknowledgements, replay reconciliation, remote snapshot interpolation, latency/jitter/loss, hitscan/projectile policy, and instrumentation.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ### G-003 — Keep pure game rules outside Three.js scene objects
 
-Weapons, damage, abilities, loot, stats, encounters, and progression should live in testable shared modules.
+Weapons, damage, abilities, loot, stats, encounters, and progression should remain headless/testable where possible.
 
 **Status:** `TRANSFER-CANDIDATE`
 
-### G-004 — Build explicit migration boundaries during local prototypes
+### G-004 — Build explicit migration boundaries in prototypes
 
-Temporary local-only behavior should already consume/produce the same semantic state that an authoritative server can later own.
-
-**Status:** `TRANSFER-CANDIDATE`
-
-### G-005 — Use semantic animation contracts plus per-asset manifests
-
-Do not make game logic depend on arbitrary GLB animation/bone names.
+Temporary local behavior should consume/produce semantic state compatible with eventual authority migration.
 
 **Status:** `TRANSFER-CANDIDATE`
 
-### G-006 — Treat the MMO as persistent services + bounded instances
+### G-005 — Semantic animation contracts + per-asset manifests
 
-A Destiny-like experience can get its shared-world feel from accounts, progression, hubs, patrol instances, matchmaking, strikes, and parties without one enormous synchronized simulation.
+Game logic should not depend directly on arbitrary GLB clip/bone names.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-006 — Persistent services + bounded instances first
+
+A shared-world game can use accounts/progression/routing plus bounded hub/patrol/mission instances without one global combat simulation.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-007 — Distinguish networking layers explicitly
+
+```text
+latest-state smoothing
+≠ snapshot interpolation
+≠ client prediction
+≠ reconciliation
+≠ hitscan lag compensation
+```
+
+NotBlox is a readable example of server authority/ECS replication and simple visual smoothing, not prediction. MavonEngine provides sequence/acknowledgement/shared-simulation scaffolding, but the inspected multiplayer template did not establish a complete replay of remaining unacknowledged inputs after correction.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-008 — Interest management is a first-class system
+
+Start with per-instance/per-player relevance filtering. Only move to a dedicated sync tier when scale requires it.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-009 — Biomes-style transactional world/replica architecture is a scale migration target
+
+Potential later decomposition:
+
+```text
+transactional world authority
+→ change stream
+→ replicas
+→ logic / AI / environment workers
+→ sync tier
+```
+
+Do not adopt this service topology for an MVP without measured need.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-010 — Procedural content should use semantic grammars
+
+Claude-of-Duty suggests constrained meaningful module/state variation is more useful than unconstrained random noise.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-011 — Separate gameplay recoil from presentation kick
+
+FPS feel should distinguish learnable aim/camera behavior from viewmodel motion, trauma, FX, and audio.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### G-012 — Performance contracts need frame-time tails
+
+For real-time game claims, include p50/p95/p99/worst-frame or equivalent hitch evidence. Average FPS alone can hide severe first-use/compilation stalls.
 
 **Status:** `TRANSFER-CANDIDATE`
 
 ---
 
-# Next validation queue
+## New agent/self-improvement candidates
 
-These are the highest-value experiments before promoting NJ-derived patterns.
+### A-001 — Parallelism should follow coupling boundaries
 
-1. **NJ MMO local reproduction**
-   - clone into an isolated workspace;
-   - install dependencies;
-   - build shared core;
-   - seed DB;
-   - run unit/server/client/full gates;
-   - launch two clients;
-   - test basic multiplayer interactions.
+Claude-of-Duty reports that parallel ownership was counterproductive for tightly coupled visual systems, while sequential ownership of the coupled concern worked better.
 
-2. **Lesson-registry prototype**
-   - implement candidate/confirmed/quarantined state mechanically;
-   - test recurrence across distinct scenarios;
-   - test stale-candidate pruning;
-   - test quarantine without deleting evidence.
+Candidate invariant:
 
-3. **Independent-verifier experiment**
-   - choose one material Skill repair;
-   - compare self-review vs fresh verifier;
-   - measure whether the fresh verifier finds meaningful additional gaps.
+```text
+independent domains → parallelize
+coupled concern → serialize / one owner
+material output → independent verifier
+```
 
-4. **Fault-injection experiment**
-   - choose an existing deterministic validator;
-   - deliberately create a defect;
-   - verify the test actually catches it.
+**Status:** `TRANSFER-CANDIDATE`
 
-5. **Visual-gate experiment**
-   - run deterministic structural QA;
-   - render output;
-   - perform semantic/fidelity review;
-   - compare failures caught by each layer.
+### A-002 — Treat causal user/critic explanations as hypotheses
 
-6. **FPS multiplayer vertical slice**
-   - 2 players;
-   - one small arena;
-   - one hitscan weapon;
-   - one projectile weapon;
-   - server authority;
-   - prediction/reconciliation/interpolation;
+A complaint can accurately identify an observable defect while incorrectly naming the mechanism. Record the symptom, generate competing causes, and discriminate with evidence.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-003 — Evidence fixtures have owners and failure modes too
+
+Visual regressions can come from stale page state, timing drift, nondeterministic seeds, or readiness races. Before patching product code, consider whether the evidence/capture layer is invalid.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-004 — Deterministic visual fixtures should isolate relevant state
+
+Candidate fixture contract:
+
+```text
+fixed seed
+fixed engine time/frame budget
+fixed viewport/DPR/camera/state
+fresh page/process where leakage is possible
+explicit asset-ready boundary
+```
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-005 — Performance failure diagnosis should inspect distributions
+
+When median/average looks fine but users report stutter, request timeline/tail evidence rather than assuming the complaint is incorrect.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-006 — Broad Skills may benefit from evidence ledgers
+
+`threejs-game-skills` tracks phase/reference/asset/evidence state. Test a lightweight version before deciding whether the overhead is justified for Vibe Coding.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-007 — Skill systems should separate knowledge, workflow, implementation vocabulary, and deterministic tooling
+
+External Skill packs specialize differently:
+
+```text
+domain/API references
+workflow/orchestration
+detailed implementation examples
+deterministic tooling/QA
+```
+
+Hypothesis: preserving these layers is better than building one giant Three.js Skill.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+### A-008 — Advanced visual validation should test mechanism robustness
+
+Beyond structural + perceptual inspection, sophisticated visual systems may need no-post baselines, diagnostic passes, seed/parameter sweeps, distance envelope tests, temporal stability, and GPU evidence.
+
+**Status:** `TRANSFER-CANDIDATE`
+
+---
+
+# Current validation queue
+
+Highest-value experiments before promotion:
+
+1. **Two-player FPS networking lab**
+   - shared movement simulation;
+   - client prediction;
+   - per-player sequence IDs;
+   - authoritative acknowledgement;
+   - replay unacknowledged inputs;
+   - remote snapshot buffer interpolation;
    - artificial latency/jitter/loss;
-   - instrumentation for bandwidth and correction error.
+   - correction/bandwidth/tick instrumentation.
 
-Only successful experiments should move their corresponding candidate toward `LOCALLY-TESTED`, `CORROBORATED`, and eventually `ADOPTED`.
+2. **Hitscan/projectile authority lab**
+   - one hitscan weapon;
+   - one projectile;
+   - server-owned outcomes;
+   - timestamp/lag policy;
+   - hit feedback vs authoritative confirmation.
+
+3. **Visual fixture determinism experiment**
+   - compare shared-page vs isolated-page captures;
+   - fixed seed/time/camera/DPR;
+   - verify stable diffs.
+
+4. **Frame-time tail profiler**
+   - report p50/p95/p99/worst;
+   - inject a first-use shader/material hitch;
+   - prove the instrumentation finds it.
+
+5. **Parallel vs sequential ownership experiment**
+   - use one deliberately coupled visual concern;
+   - compare defects, correction count, final evidence, and coordination cost.
+
+6. **Independent verifier experiment**
+   - one material Skill or game feature change;
+   - compare author self-review against fresh verification.
+
+7. **Fault-injection experiment**
+   - deliberately corrupt one validator-owned behavior;
+   - confirm correct failure.
+
+8. **Mechanism-level visual validation experiment**
+   - structural checks;
+   - final/no-post captures;
+   - diagnostics;
+   - seed/parameter/distance/time checks;
+   - performance evidence.
+
+9. **Lesson-registry prototype**
+   - candidate/confirmed/quarantined mechanics;
+   - independent recurrence;
+   - stale pruning;
+   - quarantine without deleting evidence.
+
+10. **Evidence-ledger usability experiment**
+    - trial a lightweight ledger on one broad game-build task;
+    - evaluate whether it materially improves verification/handoff enough to justify context and bookkeeping cost.
+
+11. **NJ MMO local reproduction**
+    - clone isolated;
+    - install/build/seed/test;
+    - launch two clients;
+    - reproduce documented behavior.
+
+12. **Only after measured scale pressure**
+    - prototype transactional world API;
+    - world replicas/change stream;
+    - dedicated sync tier;
+    - sharded AI.
+
+Only successful experiments should move corresponding candidates toward `LOCALLY-TESTED`, `CORROBORATED`, and eventually `ADOPTED`.
 
 ---
 
 # Research discipline
 
-When adding future sources, preserve this rule:
+Preserve this rule:
 
 ```text
 source authority tells us how seriously to investigate a pattern;
 our own validation tells us whether to enforce it in our system.
 ```
 
-Do not promote a pattern merely because the source project is impressive. Do not discard a useful pattern merely because its exact implementation differs from ours. Record the evidence, identify the transferable invariant, test it, then promote or reject it deliberately.
+Do not promote a pattern merely because the source project is impressive. Do not discard a useful invariant merely because the source stack differs from ours. Record evidence, identify the transferable hypothesis, test it, then promote, quarantine, or reject deliberately.
