@@ -372,6 +372,114 @@ Beyond structural + perceptual inspection, sophisticated visual systems may need
 
 ---
 
+# 2026-08-14 — Destiny raid-design research and Skill prototype
+
+Project-level research:
+
+- `mikiagent/vibe-coding/research/destiny-2-raid-design-study.md`
+
+Reusable Skill:
+
+- `skills/raid-encounter-designer/SKILL.md`
+- `skills/raid-encounter-designer/references/raid-encounter-grammar.md`
+- `skills/raid-encounter-designer/references/destiny-raid-design-patterns.md`
+- `skills/raid-encounter-designer/assets/raid-design-template.md`
+- `skills/raid-encounter-designer/scripts/validate_raid_design.py`
+
+## Overall status
+
+External raid-design findings: `SOURCE-OBSERVED` + `PLAYER-EXPERT-OBSERVED` + `TRANSFER-CANDIDATE`.
+
+The new `raid-encounter-designer` Skill is a `LOCAL-PROTOTYPE`: its structure, prompt contract, template, and validator exist, but its encounter-quality guidance has not yet been validated by building and blind-playtesting a raid designed through the Skill.
+
+## RAID-001 — Social feeling before surface mechanic
+
+Start from responsibility, communication, shared discovery, trust, controlled panic, mastery, or another desired cooperative feeling; choose mechanics that cause that behavior.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill workflow; not yet playtested.
+
+## RAID-002 — Explicit information graph
+
+Document who can perceive each critical state, who needs it, how it travels, and how the game confirms correct interpretation.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-003 — Explicit role / responsibility graph
+
+Map unique information, permissions, timing, movement, combat-control, and recovery responsibilities to expose spectator roles early.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-004 — Blind solve and repeat clear are separate acceptance dimensions
+
+An encounter can be a strong blind puzzle and poor weekly content, or vice versa.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-005 — Feedback ladder for discovery
+
+Blind-solving should support `observe → hypothesize → act → feedback → revise` instead of brute-force interaction with opaque state.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-006 — Designed failure/recovery topology
+
+Distinguish local penalties, recoverable role failures, phase failure, and full wipe. Preserve clutch recovery where it improves the target experience.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-007 — Active boss pressure during vulnerability is a testable option
+
+A high-end boss can remain an encounter participant during damage rather than automatically becoming a static target. Telegraph fairness remains mandatory.
+
+**Status:** `TRANSFER-CANDIDATE`.
+
+## RAID-008 — Teach/reuse/recombine mechanic language
+
+A raid can gain coherence and mastery by developing a small mechanic language across encounters, with deliberate departures used for surprise rather than accidental mechanic pile-up.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill workflow.
+
+## RAID-009 — Network/state reliability is encounter fairness
+
+Role transfer, carry objects, death/revive, phase changes, disconnects, and multi-room state need explicit reliability cases because technical errors can masquerade as player mistakes.
+
+**Status:** `LOCAL-PROTOTYPE` in template/reliability matrix.
+
+## RAID-010 — Callout/accessibility contract
+
+Communication vocabulary, visual cues, color-independent encoding, orientation, expected viewing distance, and simultaneous callout pressure are explicit design concerns rather than incidental polish.
+
+**Status:** `LOCAL-PROTOTYPE` in Skill/template.
+
+## RAID-011 — Pacing contrast and embodied spectacle
+
+Traversal, quiet spectacle, chase/escape, and environmental transformation can shape raid pacing instead of treating every segment as another mechanic room.
+
+**Status:** `TRANSFER-CANDIDATE`.
+
+## RAID-012 — Coordination cost should be matched by aspiration/reward agency
+
+High-friction group content needs strong reward identity and a repeat-pursuit model that respects the coordination cost.
+
+**Status:** `TRANSFER-CANDIDATE`.
+
+## Raid Skill validation queue
+
+1. Generate one three-encounter micro-raid with `$raid-encounter-designer`.
+2. Run `validate_raid_design.py` against the resulting design artifact.
+3. Implement it with placeholder geometry and minimal combat.
+4. Run an informed state-machine test.
+5. Run a no-guide blind team test and capture voice/hypothesis progression.
+6. Run multiple known-strategy repeats and measure dead time / participation.
+7. Compare a recoverable mechanic failure against a full-wipe version.
+8. Compare static-DPS and active-DPS versions of one boss.
+9. Fault-inject role handoff / object-ownership state.
+10. Run readability/accessibility tests at expected play distances.
+11. Only then promote supported raid rules toward `LOCALLY-TESTED` / `CORROBORATED`.
+
+---
+
 # Current validation queue
 
 Highest-value experiments before promotion:
@@ -393,68 +501,53 @@ Highest-value experiments before promotion:
    - timestamp/lag policy;
    - hit feedback vs authoritative confirmation.
 
-3. **Visual fixture determinism experiment**
+3. **Three-encounter cooperative micro-raid**
+   - designed with `$raid-encounter-designer`;
+   - blind and repeat playtests;
+   - role-participation measurement;
+   - state/reliability fault injection.
+
+4. **Visual fixture determinism experiment**
    - compare shared-page vs isolated-page captures;
    - fixed seed/time/camera/DPR;
    - verify stable diffs.
 
-4. **Frame-time tail profiler**
+5. **Frame-time tail profiler**
    - report p50/p95/p99/worst;
    - inject a first-use shader/material hitch;
    - prove the instrumentation finds it.
 
-5. **Parallel vs sequential ownership experiment**
+6. **Parallel vs sequential ownership experiment**
    - use one deliberately coupled visual concern;
    - compare defects, correction count, final evidence, and coordination cost.
 
-6. **Independent verifier experiment**
+7. **Independent verifier experiment**
    - one material Skill or game feature change;
    - compare author self-review against fresh verification.
 
-7. **Fault-injection experiment**
+8. **Fault-injection experiment**
    - deliberately corrupt one validator-owned behavior;
    - confirm correct failure.
 
-8. **Mechanism-level visual validation experiment**
+9. **Mechanism-level visual validation experiment**
    - structural checks;
    - final/no-post captures;
-   - diagnostics;
-   - seed/parameter/distance/time checks;
+   - seed/distance/time variation;
    - performance evidence.
 
-9. **Lesson-registry prototype**
-   - candidate/confirmed/quarantined mechanics;
-   - independent recurrence;
-   - stale pruning;
-   - quarantine without deleting evidence.
+10. **Evidence-ledger experiment**
+   - try a compact machine-readable ledger on one broad game build;
+   - measure whether it improves verification enough to justify the overhead.
 
-10. **Evidence-ledger usability experiment**
-    - trial a lightweight ledger on one broad game-build task;
-    - evaluate whether it materially improves verification/handoff enough to justify context and bookkeeping cost.
-
-11. **NJ MMO local reproduction**
-    - clone isolated;
-    - install/build/seed/test;
-    - launch two clients;
-    - reproduce documented behavior.
-
-12. **Only after measured scale pressure**
-    - prototype transactional world API;
-    - world replicas/change stream;
-    - dedicated sync tier;
-    - sharded AI.
-
-Only successful experiments should move corresponding candidates toward `LOCALLY-TESTED`, `CORROBORATED`, and eventually `ADOPTED`.
+Only successful experiments should move candidates toward `LOCALLY-TESTED`, `CORROBORATED`, and `ADOPTED`.
 
 ---
 
 # Research discipline
 
-Preserve this rule:
-
 ```text
 source authority tells us how seriously to investigate a pattern;
-our own validation tells us whether to enforce it in our system.
+local validation tells us whether to enforce it.
 ```
 
-Do not promote a pattern merely because the source project is impressive. Do not discard a useful invariant merely because the source stack differs from ours. Record evidence, identify the transferable hypothesis, test it, then promote, quarantine, or reject deliberately.
+Do not turn a strong external example into a mandatory Skill rule without a discriminating local experiment.
