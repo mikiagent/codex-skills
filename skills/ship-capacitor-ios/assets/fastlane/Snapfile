@@ -1,0 +1,17 @@
+devices(ENV.fetch("SNAPSHOT_DEVICES", "iPhone 17 Pro Max").split(",").map(&:strip))
+languages(ENV.fetch("SNAPSHOT_LANGUAGES", "en-US").split(",").map(&:strip))
+
+if ENV["IOS_PROJECT"]
+  project(ENV.fetch("IOS_PROJECT"))
+else
+  workspace(ENV.fetch("IOS_WORKSPACE", "ios/App/App.xcworkspace"))
+end
+scheme(ENV.fetch("SCREENSHOT_SCHEME", "AppUITests"))
+output_directory("./fastlane/screenshots")
+
+launch_arguments(["-store-screenshot-mode", "YES"])
+clear_previous_screenshots(true)
+reinstall_app(true)
+localize_simulator(true)
+override_status_bar(true)
+stop_after_first_error(true)

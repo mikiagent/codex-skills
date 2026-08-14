@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "app": {
+    "name": "TODO",
+    "bundleId": "com.example.app",
+    "sku": "TODO",
+    "primaryCategory": "GAMES",
+    "secondaryCategory": "",
+    "copyright": "2026 TODO",
+    "deviceFamilies": [
+      "iphone"
+    ]
+  },
+  "version": {
+    "marketingVersion": "1.0.0",
+    "buildNumber": "1",
+    "isFirstRelease": true,
+    "releaseMode": "manual",
+    "phasedRelease": false,
+    "testFlightVerified": false
+  },
+  "localizations": {
+    "en-US": {
+      "name": "TODO",
+      "subtitle": "TODO",
+      "description": "TODO",
+      "keywords": "TODO",
+      "promotionalText": "",
+      "supportUrl": "https://example.com/support",
+      "marketingUrl": "https://example.com",
+      "privacyUrl": "https://example.com/privacy",
+      "whatsNew": ""
+    }
+  },
+  "review": {
+    "contact": {
+      "firstName": "TODO",
+      "lastName": "TODO",
+      "email": "TODO@example.com",
+      "phone": "TODO"
+    },
+    "notes": "TODO: Explain non-obvious features, monetization, and exact review steps.",
+    "requiresLogin": false,
+    "demoUserEnv": "APP_REVIEW_DEMO_USER",
+    "demoPasswordEnv": "APP_REVIEW_DEMO_PASSWORD"
+  },
+  "compliance": {
+    "contentRightsConfirmed": false,
+    "privacyAnswersConfirmed": false,
+    "ageRatingConfirmed": false,
+    "exportComplianceConfirmed": false,
+    "thirdPartySdksReviewed": false,
+    "agreementsConfirmed": false,
+    "usesTracking": null,
+    "privacy": {
+      "collectsData": null,
+      "dataTypes": [],
+      "notes": "TODO: Reconcile first-party and third-party SDK data flows."
+    },
+    "ageRating": {
+      "answers": {},
+      "notes": "TODO: Record the current App Store Connect questionnaire answers."
+    },
+    "exportCompliance": {
+      "usesEncryption": null,
+      "usesNonExemptEncryption": null,
+      "documentationStatus": "unconfirmed",
+      "notes": "TODO: Record the export-compliance determination."
+    }
+  },
+  "accessibility": {
+    "reviewed": false,
+    "url": "",
+    "devices": {
+      "iphone": {
+        "supportsAny": null,
+        "features": []
+      }
+    }
+  },
+  "monetization": {
+    "model": "none",
+    "iapProvider": "none",
+    "products": [],
+    "ads": {
+      "provider": "none",
+      "personalized": false,
+      "consentFlow": "none",
+      "testModeVerified": false
+    }
+  },
+  "screenshots": {
+    "strategy": "fastlane-snapshot",
+    "locales": [
+      "en-US"
+    ],
+    "deviceFamilies": [
+      "iphone-6.9"
+    ],
+    "states": [
+      {
+        "id": "01-home",
+        "description": "TODO: Primary app experience shown in use"
+      }
+    ]
+  }
+}

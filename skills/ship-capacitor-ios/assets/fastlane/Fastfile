@@ -1,0 +1,138 @@
+require "json"
+
+default_platform(:ios)
+
+def release_config
+  path = ENV.fetch("APP_STORE_RELEASE_CONFIG", "release/app-store.json")
+  JSON.parse(File.read(path))
+end
+
+def review_information(config)
+  review = config.fetch("review")
+  contact = review.fetch("contact")
+  info = {
+    first_name: contact.fetch("firstName"),
+    last_name: contact.fetch("lastName"),
+    phone_number: contact.fetch("phone"),
+    email_address: contact.fetch("email"),
+    notes: review.fetch("notes")
+  }
+
+  if review.fetch("requiresLogin", false)
+    info[:demo_user] = ENV.fetch(review.fetch("demoUserEnv"))
+    info[:demo_password] = ENV.fetch(review.fetch("demoPasswordEnv"))
+  end
+
+  info
+end
+
+def deliver_options(api_key, config)
+  {
+    api_key: api_key,
+    app_identifier: ENV.fetch("APP_IDENTIFIER"),
+    app_version: config.fetch("version").fetch("marketingVersion"),
+    metadata_path: ENV.fetch("FASTLANE_METADATA_PATH", "fastlane/metadata"),
+    screenshots_path: ENV.fetch("FASTLANE_SCREENSHOTS_PATH", "fastlane/screenshots"),
+    app_review_information: review_information(config),
+    submit_for_review: false,
+    force: false,
+    run_precheck_before_submit: true
+  }
+end
+
+def xcode_source
+  if ENV["IOS_PROJECT"]
+    { project: ENV.fetch("IOS_PROJECT") }
+  else
+    { workspace: ENV.fetch("IOS_WORKSPACE", "ios/App/App.xcworkspace") }
+  end
+end
+
+platform :ios do
+  private_lane :api_key do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV.fetch("ASC_KEY_PATH"),
+      duration: 1200,
+      in_house: false
+    )
+  end
+
+  private_lane :prepare_web do
+    sh("npm run build")
+    sh("npx cap sync ios")
+  end
+
+  lane :screenshots do
+    capture_ios_screenshots
+  end
+
+  lane :beta do
+    config = release_config
+    prepare_web
+    build_app(
+      **xcode_source,
+      scheme: ENV.fetch("IOS_SCHEME", "App"),
+      configuration: ENV.fetch("IOS_CONFIGURATION", "Release"),
+      export_method: "app-store",
+      clean: true
+    )
+    primary_locale = config.fetch("localizations").values.first
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: ENV.fetch("APP_IDENTIFIER"),
+      changelog: primary_locale.fetch("whatsNew", "TestFlight candidate"),
+      skip_waiting_for_build_processing: false
+    )
+  end
+
+  desc "Upload listing metadata and screenshots without a binary or review submission"
+  lane :listing do
+    config = release_config
+    options = deliver_options(api_key, config).merge(
+      skip_binary_upload: true,
+      skip_metadata: false,
+      skip_screenshots: false
+    )
+    deliver(**options)
+  end
+
+  desc "Build and upload a candidate while leaving App Review submission disabled"
+  lane :candidate do
+    config = release_config
+    prepare_web
+    build_app(
+      **xcode_source,
+      scheme: ENV.fetch("IOS_SCHEME", "App"),
+      configuration: ENV.fetch("IOS_CONFIGURATION", "Release"),
+      export_method: "app-store",
+      clean: true
+    )
+    options = deliver_options(api_key, config).merge(
+      skip_binary_upload: false,
+      skip_metadata: false,
+      skip_screenshots: false
+    )
+    deliver(**options)
+  end
+
+  desc "Submit the already uploaded version after the explicit final gate"
+  lane :submit_review do
+    UI.user_error!("Set CONFIRM_APP_REVIEW_SUBMISSION=YES after explicit user approval") unless ENV["CONFIRM_APP_REVIEW_SUBMISSION"] == "YES"
+
+    config = release_config
+    version = config.fetch("version")
+    options = deliver_options(api_key, config).merge(
+      build_number: version.fetch("buildNumber"),
+      submit_for_review: true,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      force: true,
+      automatic_release: version.fetch("releaseMode") == "automatic",
+      phased_release: version.fetch("phasedRelease", false)
+    )
+    deliver(**options)
+  end
+end

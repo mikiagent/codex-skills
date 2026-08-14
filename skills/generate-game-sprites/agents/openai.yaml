@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Game Assets"
+  short_description: "Generate sprites, VFX, icons, bases, and parallax backgrounds"
+  default_prompt: "Use $generate-game-sprites to create game-ready image assets from this reference, including sprite frames and parallax/background layers when needed."

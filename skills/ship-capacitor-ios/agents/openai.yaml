@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ship Capacitor iOS"
+  short_description: "Prepare and publish Capacitor apps to iOS"
+  default_prompt: "Use $ship-capacitor-ios to prepare my Three.js app for TestFlight and the iOS App Store."
