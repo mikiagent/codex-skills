@@ -158,9 +158,35 @@ bad result
 Source:
 - Tao et al., "Reflection or Re-Generation? Why LLM Revision Fails Where Human Revision Succeeds," 2026.
 
+## NJ MMO: deterministic lesson promotion and independent verification
+
+A detailed source analysis is maintained in:
+
+- `references/nj-mmo-self-improvement-patterns.md`
+- repository-wide research status: `docs/LIVING_RESEARCH.md`
+
+NJ MMO provides a useful **source-observed but not yet locally validated** implementation pattern that goes beyond a flat failure log:
+
+```text
+incident
+→ grounded candidate lesson
+→ recurrence across distinct features
+→ confirmed guidance
+→ monitor future applications
+→ quarantine if repeatedly harmful
+```
+
+Its lesson-management script delegates semantic judgment to the model but keeps IDs, recurrence counts, candidate promotion, stale-candidate pruning, penalty counts, quarantine, and Markdown rendering deterministic. Its verifier is also intentionally independent from the implementing agent for material feature work.
+
+The strongest transferable hypothesis is therefore:
+
+> A failure should be recorded immediately, but the generalized lesson inferred from it should not automatically become trusted global guidance.
+
+For this Skill repository, this remains a **transfer candidate**, not an adopted production rule. We have not yet tested NJ MMO's numeric thresholds, expiry window, or verifier economics against our own workload. Keep research claims labeled accordingly until local experiments corroborate them.
+
 ## Compiled architecture
 
-The resulting self-improvement architecture is:
+The current baseline architecture is:
 
 ```text
 EXECUTION
@@ -187,6 +213,24 @@ FAILURE MEMORY
 ↓
 FUTURE EXECUTION USES IMPROVED ARTIFACTS
 ```
+
+The NJ MMO research suggests a candidate extension after behavioral validation:
+
+```text
+FAILURE MEMORY
+↓
+CANDIDATE LESSON
+↓
+INDEPENDENT CORROBORATION?
+├── no → retain temporarily / expire if stale
+└── yes → CONFIRMED GUIDANCE
+              ↓
+       harmful when reused?
+       ├── no → remain confirmed
+       └── yes → QUARANTINE + review
+```
+
+Do not enforce the extension until the local lesson-registry experiment has been run.
 
 This is not model self-training. It is **system self-improvement through editable artifacts**.
 
@@ -215,6 +259,7 @@ Do not promote these directly into global Skill behavior:
 - project-specific business rules;
 - unexplained user dissatisfaction;
 - fixes unsupported by replay/testing;
-- changes that only make a validator stop complaining.
+- changes that only make a validator stop complaining;
+- externally observed research patterns that have not yet been tested in our own environment.
 
 A self-improving agent becomes useful when its memory is selective, causal, and testable.
