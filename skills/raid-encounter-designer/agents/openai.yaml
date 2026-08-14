@@ -1,0 +1,4 @@
+interface:
+  display_name: "Raid Encounter Designer"
+  short_description: "Design cooperative raid mechanics, roles, information flow, bosses, and validation"
+  default_prompt: "Use $raid-encounter-designer to design or critique this cooperative raid/endgame encounter. Make the information graph, role responsibilities, state machine, feedback, failure/recovery, blind-solve experience, repeat-clear experience, accessibility, and validation evidence explicit before implementation."
