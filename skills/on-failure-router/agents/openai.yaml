@@ -1,0 +1,4 @@
+interface:
+  display_name: "On Failure Router"
+  short_description: "Diagnose failures, patch the owning Skill layer, and learn from the fix"
+  default_prompt: "Use $on-failure-router to diagnose what failed, ask only necessary follow-up questions, patch the smallest owning layer when justified, validate the repair, and record the lesson."
