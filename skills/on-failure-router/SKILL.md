@@ -53,11 +53,17 @@ Do not use free-form "reflection" as the entire recovery method. Reflection with
 
 Use `$prompt-enhancer` when the failure is primarily caused by an underspecified task request and the user needs clarification or a stronger execution brief.
 
+Use `$context-router` when the failure came from context overload, premature summarization, missed source ownership during narrowing, or poor evidence admission.
+
+Use `$shallow-delegation` when the failure came from bad decomposition, duplicated child context, excessive recursion, weak child contracts, or missing independent verification.
+
 Use the system `$skill-creator` when a new Skill must be created or an existing Skill needs substantial structural redesign. Follow its validation and forward-testing guidance.
 
 Use specialized validators, tests, Playwright, asset QA, build tools, or domain Skills when they can provide objective evidence.
 
 Do not duplicate another Skill's domain logic inside this Skill. This Skill owns **failure attribution, routing, improvement, and validation of the correction loop**.
+
+Before promoting a local fix into broad reusable harness behavior, read `references/continual-harness-refinement.md` and apply its local/global scope, rollback, and corroboration discipline.
 
 ## Phase 0: Detect failure context
 
@@ -204,9 +210,11 @@ Examples:
 - intended outcome was ambiguous;
 - crucial reference was omitted;
 - user preference was not captured;
-- preservation constraints were missing.
+- preservation constraints were missing;
+- too much irrelevant source material was admitted;
+- a stale summary displaced exact source evidence.
 
-Action: improve task brief or route through `$prompt-enhancer`.
+Action: improve task brief or route through `$prompt-enhancer` / `$context-router` as appropriate.
 
 Patch a Skill only if this omission is recurrent enough that the Skill should automatically infer, inspect, or ask for it in future.
 
@@ -217,9 +225,10 @@ Examples:
 - correct Skill did not trigger;
 - wrong Skill triggered;
 - multiple Skills overlap ambiguously;
-- orchestrator skipped a required component Skill.
+- orchestrator skipped a required component Skill;
+- delegation boundaries caused duplicated or missing ownership.
 
-Action: revise Skill description, routing rules, or orchestration order. Descriptions are trigger surfaces; treat them as executable routing metadata.
+Action: revise Skill description, routing rules, orchestration order, or route through `$shallow-delegation`. Descriptions are trigger surfaces; treat them as executable routing metadata.
 
 ### Level 3 — Skill workflow / contract
 
@@ -409,6 +418,27 @@ complaint
 
 Do not jump directly from complaint to universal rule.
 
+## Continual-harness promotion discipline
+
+For broad or reusable self-modification, apply the stricter promotion ladder from `references/continual-harness-refinement.md`:
+
+```text
+failure incident
+→ observable failure
+→ candidate hypothesis
+→ verified local cause
+→ smallest local patch
+→ replay failed case
+→ neighbor / regression test
+→ candidate reusable lesson
+→ independent corroboration
+→ durable Skill rule/tool
+```
+
+Keep the highest-authority outer constraints immutable. Treat project/session facts as local unless there is clear reason to promote them. Preserve diffs and evidence so a harmful refinement can be reverted or quarantined instead of silently becoming permanent guidance.
+
+A successful self-edit is still a hypothesis until replay and neighboring evidence support it.
+
 ## Self-improvement loop
 
 The intended long-term system is:
@@ -451,6 +481,7 @@ This is **artifact-level self-improvement**, not model-weight self-training. The
 - Never store credentials or secrets in feedback logs.
 - Never repeatedly self-edit without replaying or testing the behavior being changed.
 - Prefer reversible, reviewable patches.
+- Treat context-management and delegation failures as their own owning layers instead of compensating with unrelated domain instructions.
 
 ## Output format after a failure repair
 
